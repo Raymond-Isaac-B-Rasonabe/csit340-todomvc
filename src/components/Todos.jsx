@@ -3,10 +3,17 @@ import { useState } from 'react'
 function Todos() {
     const [text, setText] = useState('')
   const [todos, setTodos] = useState([])
+  const [filter, setFilter] = useState('All')
   const remainingCount = todos.filter((todo) => !todo.completed).length
  
   const allCompleted = todos.length > 0 && todos.every((todo) => todo.completed)
   
+    const visibleTodos = todos.filter((todo) => {
+    if (filter === 'Active') return !todo.completed
+    if (filter === 'Completed') return todo.completed
+    return true
+  })
+
   function handleSubmit(e) {
     e.preventDefault()
     const trimmed = text.trim()
@@ -49,18 +56,23 @@ function Todos() {
       <div className="relative bg-white shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]">
         <form onSubmit={handleSubmit}>
           <input
-            id="toggle-all"
-            type="checkbox"
-            checked={allCompleted}
-            onChange={handleToggleAll}
-            className="peer sr-only"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="h-[65px] w-full py-4 pr-4 pl-[60px] text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
+            placeholder="What needs to be done?"
           />
         </form>
 
       {todos.length > 0 && (
           <>
         <main className="relative border-t border-[#e6e6e6]">
-          <input id="toggle-all" type="checkbox" className="peer sr-only" />
+          <input
+            id="toggle-all"
+            type="checkbox"
+            checked={allCompleted}
+            onChange={handleToggleAll}
+            className="peer sr-only"
+          />
           <label
             htmlFor="toggle-all"
             className="absolute -top-[66px] left-0 flex h-[65px] w-[60px] cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
@@ -69,7 +81,7 @@ function Todos() {
           </label>
 
           <ul>
-            {todos.map((todo) => (
+            {visibleTodos.map((todo) => (
               <li
                 key={todo.id}
                 className="group relative flex items-center border-b border-[#ededed] text-2xl"
@@ -107,11 +119,14 @@ function Todos() {
             <strong className="font-light">{remainingCount}</strong>{' '}
             {remainingCount === 1 ? 'item' : 'items'} left
           </span>
-          <ul className="flex justify-center gap-1">
+            <ul className="flex justify-center gap-1">
             <li>
               <button
                 type="button"
-                className="cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]"
+                onClick={() => setFilter('All')}
+                className={filter === 'All'
+                  ? 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+                  : 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'}
               >
                 All
               </button>
@@ -119,7 +134,10 @@ function Todos() {
             <li>
               <button
                 type="button"
-                className="cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10"
+                onClick={() => setFilter('Active')}
+                className={filter === 'Active'
+                  ? 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+                  : 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'}
               >
                 Active
               </button>
@@ -127,7 +145,10 @@ function Todos() {
             <li>
               <button
                 type="button"
-                className="cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10"
+                onClick={() => setFilter('Completed')}
+                className={filter === 'Completed'
+                  ? 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+                  : 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'}
               >
                 Completed
               </button>
