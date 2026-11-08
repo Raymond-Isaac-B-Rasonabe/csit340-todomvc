@@ -5,6 +5,8 @@ function Todos() {
   const [todos, setTodos] = useState([])
   const remainingCount = todos.filter((todo) => !todo.completed).length
  
+  const allCompleted = todos.length > 0 && todos.every((todo) => todo.completed)
+  
   function handleSubmit(e) {
     e.preventDefault()
     const trimmed = text.trim()
@@ -16,12 +18,18 @@ function Todos() {
     setText('')
   }
 
+  
   function handleToggle(id) {
     setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     )
+  }
+
+  function handleToggleAll() {
+    const completed = !allCompleted
+    setTodos(todos.map((todo) => ({ ...todo, completed })))
   }
 
   function handleDelete(id) {
@@ -41,10 +49,11 @@ function Todos() {
       <div className="relative bg-white shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]">
         <form onSubmit={handleSubmit}>
           <input
-          value={text}
-            onChange={(e) => setText(e.target.value)}
-            className="h-[65px] w-full py-4 pr-4 pl-[60px] text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
-            placeholder="What needs to be done?"
+            id="toggle-all"
+            type="checkbox"
+            checked={allCompleted}
+            onChange={handleToggleAll}
+            className="peer sr-only"
           />
         </form>
 
